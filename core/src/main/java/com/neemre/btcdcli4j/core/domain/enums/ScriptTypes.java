@@ -15,13 +15,17 @@ import lombok.ToString;
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public enum ScriptTypes {
-	
+
+	NONSTANDARD("nonstandard"),
 	PUB_KEY("pubkey"),
 	PUB_KEY_HASH("pubkeyhash"),
 	SCRIPT_HASH("scripthash"),
 	MULTISIG("multisig"),
 	NULL_DATA("nulldata"),
-	NONSTANDARD("nonstandard");
+	WITNESS_V0_KEYHASH("witness_v0_keyhash"),
+	WITNESS_V0_SCRIPTHASH("witness_v0_scripthash"),
+	WITNESS_UNKNOWN("witness_unknown"),
+	;
 	
 	private final String name;
 
