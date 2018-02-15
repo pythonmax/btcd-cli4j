@@ -14,6 +14,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Block extends BlockBase<String> {
+public class BlockDetailed extends BlockBase<RawTransaction> {
 
 }

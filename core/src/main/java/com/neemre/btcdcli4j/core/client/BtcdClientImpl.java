@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.neemre.btcdcli4j.core.domain.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,33 +17,6 @@ import com.neemre.btcdcli4j.core.Commands;
 import com.neemre.btcdcli4j.core.CommunicationException;
 import com.neemre.btcdcli4j.core.common.DataFormats;
 import com.neemre.btcdcli4j.core.common.Defaults;
-import com.neemre.btcdcli4j.core.domain.Account;
-import com.neemre.btcdcli4j.core.domain.AddedNode;
-import com.neemre.btcdcli4j.core.domain.Address;
-import com.neemre.btcdcli4j.core.domain.AddressInfo;
-import com.neemre.btcdcli4j.core.domain.AddressOverview;
-import com.neemre.btcdcli4j.core.domain.Block;
-import com.neemre.btcdcli4j.core.domain.BlockChainInfo;
-import com.neemre.btcdcli4j.core.domain.Info;
-import com.neemre.btcdcli4j.core.domain.MemPoolInfo;
-import com.neemre.btcdcli4j.core.domain.MemPoolTransaction;
-import com.neemre.btcdcli4j.core.domain.MiningInfo;
-import com.neemre.btcdcli4j.core.domain.MultiSigAddress;
-import com.neemre.btcdcli4j.core.domain.NetworkInfo;
-import com.neemre.btcdcli4j.core.domain.NetworkTotals;
-import com.neemre.btcdcli4j.core.domain.Output;
-import com.neemre.btcdcli4j.core.domain.OutputOverview;
-import com.neemre.btcdcli4j.core.domain.Payment;
-import com.neemre.btcdcli4j.core.domain.PeerNode;
-import com.neemre.btcdcli4j.core.domain.RawTransaction;
-import com.neemre.btcdcli4j.core.domain.RawTransactionOverview;
-import com.neemre.btcdcli4j.core.domain.RedeemScript;
-import com.neemre.btcdcli4j.core.domain.SignatureResult;
-import com.neemre.btcdcli4j.core.domain.SinceBlock;
-import com.neemre.btcdcli4j.core.domain.Tip;
-import com.neemre.btcdcli4j.core.domain.Transaction;
-import com.neemre.btcdcli4j.core.domain.TxOutSetInfo;
-import com.neemre.btcdcli4j.core.domain.WalletInfo;
 import com.neemre.btcdcli4j.core.jsonrpc.client.JsonRpcClient;
 import com.neemre.btcdcli4j.core.jsonrpc.client.JsonRpcClientImpl;
 import com.neemre.btcdcli4j.core.util.CollectionUtils;
@@ -309,22 +283,26 @@ public class BtcdClientImpl implements BtcdClient {
 
 	@Override
 	public Block getBlock(String headerHash) throws BitcoindException, CommunicationException {
-		String blockJson = rpcClient.execute(Commands.GET_BLOCK.getName(), headerHash);
-		Block block = rpcClient.getMapper().mapToEntity(blockJson, Block.class);
-		return block;
+		return (Block) getBlock(headerHash, 1);
 	}
 
 	@Override
-	public Object getBlock(String headerHash, Boolean isDecoded) throws BitcoindException, 
+	public Object getBlock(String headerHash, Boolean isDecoded) throws BitcoindException,
 			CommunicationException {
-		List<Object> params = CollectionUtils.asList(headerHash, isDecoded);
+		return getBlock(headerHash, isDecoded ? 1 : 0);
+	}
+
+	@Override
+	public Object getBlock(String headerHash, int verbosity) throws BitcoindException, CommunicationException {
+		List<Object> params = CollectionUtils.asList(headerHash, verbosity);
 		String blockJson = rpcClient.execute(Commands.GET_BLOCK.getName(), params);
-		if (isDecoded) {
-			Block block = rpcClient.getMapper().mapToEntity(blockJson, Block.class);
-			return block;
-		} else {
-			String block = rpcClient.getParser().parseString(blockJson);
-			return block;
+		switch (verbosity) {
+			case 0:
+				return rpcClient.getParser().parseString(blockJson);
+			case 1:
+				return rpcClient.getMapper().mapToEntity(blockJson, Block.class);
+			default:
+				return rpcClient.getMapper().mapToEntity(blockJson, BlockDetailed.class);
 		}
 	}
 
