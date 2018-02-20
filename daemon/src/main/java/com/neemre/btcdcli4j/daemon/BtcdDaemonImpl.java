@@ -39,7 +39,7 @@ public class BtcdDaemonImpl implements BtcdDaemon {
 		initialize();
 		this.client = configurator.checkBtcdProvider(btcdProvider);
 		buildMonitors(configurator.checkNodeConfig(client.getNodeConfig()));
-		configurator.checkNodeLiveness(client.getInfo());
+		configurator.checkNodeLiveness(client.getNetworkInfo());
 		startMonitors();
 		configurator.checkMonitorStates(futures);
 	}
