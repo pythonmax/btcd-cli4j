@@ -11,6 +11,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@AllArgsConstructor
 public class BlockBase<T> extends Entity {
     private String hash;
     private Integer confirmations;
